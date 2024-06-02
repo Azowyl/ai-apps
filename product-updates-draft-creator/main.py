@@ -21,7 +21,7 @@ def get_context(llm):
         commit messages: {commits}, changes: {changes}
     """
     template = PromptTemplate(template=base_query, input_variables=["commits", "changes"])
-    query_for_documents = llm.invoke(template.invoke({"commits": github_data.get_pr_commit_messages(845), "changes": github_data.get_pr_diff(845)})).content
+    query_for_documents = llm.invoke(template.invoke({"commits": github_data.get_pr_commit_messages(os.getenv('PR_NUMBER')), "changes": github_data.get_pr_diff(os.getenv('PR_NUMBER'))})).content
 
     return document_handler.retrieve_relevant_documents(query_for_documents)
 
