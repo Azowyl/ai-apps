@@ -3,8 +3,9 @@ from github_data import *
 from document import *
 from langchain_openai import ChatOpenAI
 from langchain.prompts.prompt import PromptTemplate
-from langchain_openai import OpenAIEmbeddings
-from langchain_pinecone import PineconeVectorStore
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import SystemMessage
+from langchain_core.prompts import HumanMessagePromptTemplate
 
 import os
 
@@ -28,16 +29,23 @@ def get_context(llm):
 
 def get_product_update_draft(llm):
     query = """
-        Create a title and a detailed description of the implemented feature in a way that a non-technical person can understand. The description should cover the following points:
+        Create a title and a detailed description of the implemented feature in a way that a non-technical person can understand. The description should cover the following points in a single paragraph without subtitles:
 
         Why the feature was needed: Explain the reason or motivation behind developing the feature.
         What problem it solved: Describe the issue or challenge that the feature addresses.
         How we define it as successful: Outline the criteria or metrics that indicate the feature's success.
         How we define it as a failure: Specify the conditions or outcomes that would signify the feature's failure.
-
-        Create two versions: one in Spanish and one in Portuguese.
+        Additionally, provide two versions of this description: one in Spanish and one in Portuguese.
     """
-    template = PromptTemplate(template="{query} Context: {context}", input_variables=["query", "context"])
+    template = ChatPromptTemplate.from_messages(
+    [
+        SystemMessage(
+            content=(
+                "You are a helpful assistant that writes excellent feature summaries using pitches and tech designs as context to respond to queries"
+            )
+        ),
+        HumanMessagePromptTemplate.from_template("Query: {query} Context: {context}"),
+    ])
     prompt_with_context = template.invoke({"query": query, "context": get_context(llm)})
 
     return llm.invoke(prompt_with_context).content
