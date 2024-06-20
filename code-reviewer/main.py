@@ -25,7 +25,7 @@ prompt = ChatPromptTemplate.from_messages(
                     c. If there is no tests for the edge cases, testing will not be useful. Tests should cover valid, edge and invalid cases. For example, if there is a context: describe('when request succeeds'), then there should be another context: describe('when request fails'). you should indicate the missing scenarios if there are any. 
                     d. There should be no typos in tests names
                 3. Find the line number for each of the errors found on the previous step
-                4. Create a comment for each error in the current pull request
+                4. Create a comment for each error in the current pull request, each comment should be prefixed with [AI] tag, for example if the comment is "Change 'click' to 'clicking'" it should be created as "[AI] Change 'click' to 'clicking'"
             """,
         ),
         ("user", "Review this list of files: {files}"),
